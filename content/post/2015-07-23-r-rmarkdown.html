@@ -1,0 +1,278 @@
+---
+title: "Toronto COVID-19 data overview in 2020"
+author: Yingshi Wang
+date: "2020-09-23"
+bibliography: "references.bib"
+categories: 
+- R
+tags: 
+- R Markdown
+- plot
+- regression
+slug: lithium-metadata
+---
+
+
+
+<div id="abstract" class="section level1">
+<h1>Abstract</h1>
+<p>Since in late December 2019, the whole world started to report outbreaks of coronavirus which causes an enormous impact on both people’s health and life. In this report, I demonstrated the trend of Toronto COVID-19 data, and displays its distribution among people’s age, gender, etc. The data set is composed of 17590 confirm and probable cases reported by Toronto Public Health, containing geographic &amp; demographic information. From data plot, I found that the amount of people get infected increased again on September, and females in aged 20-29 years old are more easier to be infected.</p>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The outbreak of Coronavirus disease has rapidly expanded, becoming a worldwide pandemic. As a resident in Toronto, I am interested in the trend of COIVD-19 daily new cases in data. In the report, my aim is to provide reader an initial insight of the data with plots and description. I think this is important because it could help people to be more aware of COVID-19. The data set contains clients’ age range, neighborhood name,source of infection and gender, etc. In order to investigate the infection trend in Toronto, I create a new data set which contains Date and daily new cases, based on number of cases reported in a day. In addition, there are some missing values existing in the data set. (linked to GitHub repo:<a href="https://github.com/beryller/wangs-website" class="uri">https://github.com/beryller/wangs-website</a>)</p>
+</div>
+<div id="data-graph-discussion" class="section level1">
+<h1>Data &amp; Graph Discussion</h1>
+<p>As we first glimpsed at the data set, it is evident that most variables are categorical and some missing values existing. I decided to delete entire row containing a missing values because they are less than 30% of total 17590 data. Although we may loss some information, this way of data process helping us to do a more accurate data analysis in the future.</p>
+<pre><code>## Rows: 17,872
+## Columns: 18
+## $ `_id`                    &lt;int&gt; 143647, 143648, 143649, 143650, 143651, 1436…
+## $ Assigned_ID              &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1…
+## $ `Outbreak Associated`    &lt;chr&gt; &quot;Sporadic&quot;, &quot;Sporadic&quot;, &quot;Sporadic&quot;, &quot;Sporadi…
+## $ `Age Group`              &lt;chr&gt; &quot;50 to 59 Years&quot;, &quot;50 to 59 Years&quot;, &quot;20 to 2…
+## $ `Neighbourhood Name`     &lt;chr&gt; &quot;Willowdale East&quot;, &quot;Willowdale East&quot;, &quot;Parkw…
+## $ FSA                      &lt;chr&gt; &quot;M2N&quot;, &quot;M2N&quot;, &quot;M3A&quot;, &quot;M4W&quot;, &quot;M4W&quot;, &quot;M2R&quot;, &quot;M…
+## $ `Source of Infection`    &lt;chr&gt; &quot;Travel&quot;, &quot;Travel&quot;, &quot;Travel&quot;, &quot;Travel&quot;, &quot;Tra…
+## $ Classification           &lt;chr&gt; &quot;CONFIRMED&quot;, &quot;CONFIRMED&quot;, &quot;CONFIRMED&quot;, &quot;CONF…
+## $ `Episode Date`           &lt;chr&gt; &quot;2020-01-22&quot;, &quot;2020-01-21&quot;, &quot;2020-02-05&quot;, &quot;2…
+## $ `Reported Date`          &lt;chr&gt; &quot;2020-01-23&quot;, &quot;2020-01-23&quot;, &quot;2020-02-21&quot;, &quot;2…
+## $ `Client Gender`          &lt;chr&gt; &quot;FEMALE&quot;, &quot;MALE&quot;, &quot;FEMALE&quot;, &quot;FEMALE&quot;, &quot;MALE&quot;…
+## $ Outcome                  &lt;chr&gt; &quot;RESOLVED&quot;, &quot;RESOLVED&quot;, &quot;RESOLVED&quot;, &quot;RESOLVE…
+## $ `Currently Hospitalized` &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Currently in ICU`       &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Currently Intubated`    &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Ever Hospitalized`      &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;…
+## $ `Ever in ICU`            &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Ever Intubated`         &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…</code></pre>
+<p>In more details on client age groups and gender, there are total 9 age groups which are 19 years old and younger, between 20-29 years old, between 30-39 years old, between 40-49 years old, between 50-59 years old, between 60-69 years old,between 70-79 years old,between 80-89 years old, and 90 years old and older. And 9417 female clients, 8162 male clients and 11 transgender clients(Noted that I counted ‘other’ as TRANSGENDER as well).</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Age Group</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">19 and younger</td>
+<td align="right">1279</td>
+</tr>
+<tr class="even">
+<td align="left">20 to 29 Years</td>
+<td align="right">3027</td>
+</tr>
+<tr class="odd">
+<td align="left">30 to 39 Years</td>
+<td align="right">2701</td>
+</tr>
+<tr class="even">
+<td align="left">40 to 49 Years</td>
+<td align="right">2388</td>
+</tr>
+<tr class="odd">
+<td align="left">50 to 59 Years</td>
+<td align="right">2706</td>
+</tr>
+<tr class="even">
+<td align="left">60 to 69 Years</td>
+<td align="right">1795</td>
+</tr>
+<tr class="odd">
+<td align="left">70 to 79 Years</td>
+<td align="right">1116</td>
+</tr>
+<tr class="even">
+<td align="left">80 to 89 Years</td>
+<td align="right">1506</td>
+</tr>
+<tr class="odd">
+<td align="left">90 and older</td>
+<td align="right">1072</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Client Gender</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">FEMALE</td>
+<td align="right">9417</td>
+</tr>
+<tr class="even">
+<td align="left">MALE</td>
+<td align="right">8162</td>
+</tr>
+<tr class="odd">
+<td align="left">OTHER</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">TRANSGENDER</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<p>For the first plot, I plotted a time series plot of daily new cases in Toronto. To create this plot, I treated variable <code>Reported Date</code> as the data that infection confirmed data. Then I use <code>count()</code> function to count the cases in each day. Because there are some days missing on February, so I add those date to the data set with 0 confirmed case.</p>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>As we looking at the above time series plot, it demonstrated that there is a trend in the series. The data has a local maximum on April 27th(with 433 confirmed cases), 2020 and peaks at May 29th,2020(with 361 confirmed cases). Then the data goes down on late May. Number of daily new cases seems to be low and stable on July and August. however, it tends to go up again on September. This might be caused by people starting to go outside for some outdoor activities.</p>
+<p>Next, let’s take a look at the bar plot of age group in the following. I observed that people in the age group 20-29 years old have the highest frequency, following by age group 30-39 years old and 50-59 years old. Also the red shaded area represents female, and green area represents male. From the plot, we can say that females from aged 20 to 59 tend to be more get infected.</p>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The following tables are the count of <code>Source of Infection</code> and count of <code>Outcomes</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Source of Infection</th>
+<th align="right">n</th>
+<th align="right">Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Close contact</td>
+<td align="right">6361</td>
+<td align="right">0.36</td>
+</tr>
+<tr class="even">
+<td align="left">Community</td>
+<td align="right">2460</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="odd">
+<td align="left">Healthcare</td>
+<td align="right">1137</td>
+<td align="right">0.06</td>
+</tr>
+<tr class="even">
+<td align="left">Institutional</td>
+<td align="right">343</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">Unknown</td>
+<td align="right">6465</td>
+<td align="right">0.37</td>
+</tr>
+<tr class="even">
+<td align="left">Travel</td>
+<td align="right">824</td>
+<td align="right">0.05</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Outcome</th>
+<th align="right">n</th>
+<th align="right">Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ACTIVE</td>
+<td align="right">1237</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">FATAL</td>
+<td align="right">1143</td>
+<td align="right">0.06</td>
+</tr>
+<tr class="odd">
+<td align="left">RESOLVED</td>
+<td align="right">15210</td>
+<td align="right">0.86</td>
+</tr>
+</tbody>
+</table>
+<p>The following are the pie chart of source of infection(on the left), and the bar plot on the right side corresponding to the age group. The pie chart displays that the source of <code>close contact</code> accounts for the most in know source, about 36%, and unknown source is about <span class="math inline">\(37\%\)</span>. The thing surprised me is that most people who get infected in February and March are due to <code>travel</code>, and people getting infected recently are because they having close contact with other infected people. On the other hand, there is another thing observed from bar plot is that the fatal rate is approximately <span class="math inline">\(6\%\)</span> and most people were recovered. Although the fatal rate is relatively low, the spreading rate of coronavirus is super high.</p>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="next-step-weakness" class="section level1">
+<h1>Next Step &amp; Weakness</h1>
+<p>After an analysis of data insight, we can do a time series model to predict future new cases of infected people. But before that, we need to check if our series is stationary by using an unit root test. However, our weakness is also presenting. The way that we treated missing values might let our analysis loss some significant features. And we lack of some other variables that may be affected by COVID-19 in this data set, otherwise we could investigate in the impact under the pandemic of COVID-19.</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Wickham et al., (2019). Welcome to the tidyverse. Journal of Open
+Source Software, 4(43), 1686, <a href="https://doi.org/10.21105/joss.01686" class="uri">https://doi.org/10.21105/joss.01686</a></p>
+<p>H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
+Springer-Verlag New York, 2016.</p>
+<p>Sharla Gelfand (2020). opendatatoronto: Access the City of
+Toronto Open Data Portal.
+<a href="https://sharlagelfand.github.io/opendatatoronto/" class="uri">https://sharlagelfand.github.io/opendatatoronto/</a>,
+<a href="https://github.com/sharlagelfand/opendatatoronto/" class="uri">https://github.com/sharlagelfand/opendatatoronto/</a>.</p>
+<p>Baptiste Auguie (2017). gridExtra: Miscellaneous Functions for
+“Grid” Graphics. R package version 2.3.</p>
+<p>Adrian Trapletti and Kurt Hornik (2019). tseries: Time Series
+Analysis and Computational Finance. R package version 0.10-47.</p>
+<p>Hadley Wickham, Romain François, Lionel Henry and Kirill Müller
+(2020). dplyr: A Grammar of Data Manipulation.
+<a href="https://dplyr.tidyverse.org" class="uri">https://dplyr.tidyverse.org</a>, <a href="https://github.com/tidyverse/dplyr" class="uri">https://github.com/tidyverse/dplyr</a>.</p>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<pre class="r"><code>covid19.data &lt;- show_package(&quot;https://open.toronto.ca/dataset/covid-19-cases-in-toronto/&quot;)
+data.id &lt;- covid19.data[[&quot;id&quot;]]
+data.resourse &lt;- list_package_resources(data.id)
+data &lt;- data.resourse %&gt;%
+  get_resource()
+glimpse(data)</code></pre>
+<pre class="r"><code>#Missing values cleaning
+data$`Age Group`&lt;-as.factor(data$`Age Group`)
+levels(data$`Age Group`) &lt;- c(&quot;19 and younger&quot;,&quot;20 to 29 Years&quot;,&quot;30 to 39 Years&quot;,&quot;40 to 49 Years&quot;,&quot;50 to 59 Years&quot;,&quot;60 to 69 Years&quot;,&quot;70 to 79 Years&quot;,&quot;80 to 89 Years&quot;,&quot;90 and older&quot;,NA)
+data$`Client Gender` &lt;- as.factor(data$`Client Gender`)
+levels(data$`Client Gender`) &lt;- c(&quot;FEMALE&quot;,&quot;MALE&quot;,&quot;OTHER&quot;,&quot;TRANSGENDER&quot;,NA)
+library(tidyverse)
+data&lt;-data %&gt;% drop_na()
+summary(data)</code></pre>
+<pre class="r"><code>#data$`Reported Date`&lt;-as.factor(data$&#39;Reported Date&#39;)
+
+## Convert to date
+#data$&#39;Reported Date&#39; &lt;- as.Date(data$&#39;Reported Date&#39;)
+## Tabulate
+#tab &lt;- table(data$&#39;Reported Date&#39;)
+
+## Format
+cases &lt;-read.csv(&quot;cases.csv&quot;)
+cases &lt;- cases[31:244,2:3]
+# cases &lt;- data.frame(Date=format(as.Date(names(tab))),
+#            Frequency=as.vector(tab))
+cases$Date&lt;-as.Date(cases$Date)
+ggplot(cases, aes(Date, Frequency)) + geom_line(col=&#39;#79a3e2&#39;,size=1) + 
+  scale_x_date(date_labels = &quot;%Y %b %d&quot;) + xlab(&quot;&quot;) + ylab(&quot;New cases&quot;)</code></pre>
+<pre class="r"><code>data$`Age Group` &lt;- as.character(data$`Age Group`)
+#data %&gt;% count(`Age Group`)
+# age.freq &lt;- data.frame(table(data$`Age Group`))
+# ggplot(data=age.freq, aes(x=Var1,y=Freq)) + geom_bar(stat=&quot;identity&quot;,fill=&#39;#41b3d5&#39;) + labs(title = &quot;Bar plot of Age Group&quot;)+
+#   xlab(&quot;Age group&quot;) + ylab(&quot;Freq&quot;)</code></pre>
+<pre class="r"><code># gender.freq &lt;- data.frame(table(data$`Client Gender`))
+# ggplot(data=gender.freq, aes(x=Var1, y=Freq)) +
+#   geom_bar(stat=&quot;identity&quot;, fill=&quot;steelblue&quot;)+
+#   geom_text(aes(label=Freq), vjust=1.6, color=&quot;white&quot;, size=3.5)+
+#   theme_minimal() + labs(title = &quot;Bar plot of Age Group&quot;)+
+#   xlab(&quot;Gender&quot;) + ylab(&quot;Freq&quot;)
+ggplot(data = data, aes(`Age Group`, ..count..)) + geom_bar(aes(fill = `Client Gender`))+ labs(title = &quot;Bar plot of Age Group&quot;)</code></pre>
+<pre class="r"><code>data$`Source of Infection` &lt;- as.factor(data$`Source of Infection`)
+levels(data$`Source of Infection`) &lt;- c(&quot;Close contact&quot;,&quot;Community&quot;,&quot;Healthcare&quot;,&quot;Institutional&quot;,&quot;Unknown&quot;,&quot;Unknown&quot;,&quot;Travel&quot;,&quot;Unknown&quot;)
+Source.count &lt;- count(data, `Source of Infection`)
+agg_ord &lt;- mutate(Source.count,
+                  `Source of Infection` = reorder(`Source of Infection`, -n, sum))
+Percent &lt;-round(c(6361/17590,2460/17590,1137/17590,343/17590,6465/17590,824/17590),2)
+agg_ord$Percent &lt;- Percent
+knitr::kable(agg_ord)
+p1&lt;-ggplot(data = agg_ord) +
+      geom_col(aes(x = 1, y=n, fill = `Source of Infection`), position = &quot;fill&quot;) + coord_polar(theta = &quot;y&quot;)</code></pre>
+<pre class="r"><code>#Fatal rate
+p2&lt;-ggplot(data = data, aes(Outcome, ..count..)) + geom_bar(fill=&quot;steelblue&quot;)+ labs(title = &quot;Bar plot of outcome&quot;)+theme_minimal()
+outcome.count &lt;- count(data, Outcome)
+outcome.count$Percent &lt;- c(1237/17590,1143/17590,15210/17590)
+knitr::kable(outcome.count,digits = 2)</code></pre>
+<pre class="r"><code>grid.arrange(p1, p2, nrow = 1)</code></pre>
+</div>
